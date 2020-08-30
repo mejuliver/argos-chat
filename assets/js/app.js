@@ -1,7 +1,6 @@
-var bizfairv_ws;
-
+var $app;
 (function(){
-	bizfair_ws = {
+	app = {
 		create : function(){
 			// authenticate
 			if( window.isAuthenticated ){
@@ -31,4 +30,6 @@ var bizfairv_ws;
 		}
 
 	}
+
+	app.create();
 })();
