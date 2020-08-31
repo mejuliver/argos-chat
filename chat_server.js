@@ -44,45 +44,105 @@ let argos = {
 		  	throw err; // throw error
 		  }else{
 		  	con = conn;
-		  	let dblist = [];
-		  	r.dbList().run(conn).then(function(res){
-		  		if( !res.includes('argosdb') ){
-		  			r.dbCreate('argosdb').run(conn).then(function(){
-		  				r.db('argosdb').tableCreate('connections').run(conn).catch(function(){
-		  					_this.startServer();
-		  					console.log('argos connections table has been created');
-		  				}).then(function(){
-		  					_this.startServer();
-		  				});
-		  			});
-		  		}else{
-	  				r.db('argosdb').tableCreate('connections').run(conn).catch(function(){
-	  					_this.startServer();
-	  					console.log('argos connections table has been created');
-	  				}).then(function(){
-	  					_this.startServer();
-	  				});
-		  		}
-		  	});
-		  }  
+  			r.dbCreate('argosdb').run(conn).then(function(){
+  				_this.initTables();
+  			}).catch(function(){
+  				_this.initTables();
+  			});
+		  		
+		  	// create login table if not found
+		  }
 		});
 	},
-	prepareConnectionsIndex : function(){
-		r.db('argosdb').table('connections').indexCreate('socketid').run(con).catch(function(){});
+	initTables : function(){
+		let _this = this;
+		// create connections
+		r.db('argosdb').tableCreate('connections').run(con).then(function(){
+			console.log('argos connections table has been created');
+		}).catch(function(){
+			console.log('argos connections already created');
+		});
+
+		r.db('argosdb').tableCreate('users').run(con).then(function(){
+			console.log('argos users table has been created');
+		}).catch(function(){
+			console.log('argos users table already created');
+		});
+
+		r.db('argosdb').tableCreate('messages').run(con).then(function(){
+			console.log('argos messages table has been created');
+		}).catch(function(){
+			console.log('argos messages table already created');
+		});
+		r.db('argosdb').tableCreate('agents').run(con).then(function(){
+			console.log('argos messages table has been created');
+		}).catch(function(){
+			console.log('argos messages table already created');
+		});
+
+		let timer = setInterval(function(){
+			r.db('argosdb').tableList().run(con).then(function(res){
+				if( res.includes('connections') && res.includes('users') && res.includes('messages') ){
+					_this.startServer();
+					clearInterval(timer);
+				}
+			});
+
+		},1000)
+	},
+	prepareDBIndex : function(){
 		r.db('argosdb').table('connections').indexCreate('userid').run(con).catch(function(){});
+		r.db('argosdb').table('users').indexCreate('first_name').run(con).catch(function(){});
+		r.db('argosdb').table('users').indexCreate('email').run(con).catch(function(){});
+		r.db('argosdb').table('messages').indexCreate('usersid').run(con).catch(function(){});
+	},
+	findAgent : function(){
+
 	},
 	startServer : function(){
-		this.prepareConnectionsIndex();
+		let _this = this;
+		this.prepareDBIndex();
+
+		console.log('Argos server has been initialized');
+
 		// clear the connections, session_ids, chat que table
 		io.sockets.on('connection', function (socket) {
 
-		    socket.on('message',function(msg){
-		        
-		        switch(msg.command){    
+			r.db('argosdb').table('connections').insert({ // add socket to db connections
+        		id : socket.id,
+        		userid : false
+        	});
 
-		            case 'connect' : // when client or agent wants to connect to the chat server
-		            r.db('argosdb').table('connections').
-		            
+			// return 'ok' to client
+			io.sockets.connected[socket.id].emit("argos", { type : 'connect', success : true } );
+
+
+		    socket.on('argos',function(msg){
+		        
+		        switch(msg.type){    
+
+		            case 'register' : // register user
+		            	r.db('argosdb').table('users').count().run(con).then(function(res){
+		            		let _id = uniqid();
+		            		r.db('argosdb').table('users').insert({ // insert to users
+				        		id : _id,
+				        		first_name : res.msg.fname,
+				        		last_name : res.msg.lname,
+				        		email : res.msg.email,
+				        		message : res.msg.message
+				        	}).run(con).then(function(){
+				        		r.db('argosdb').table('users').filer({
+				        			id : socket.id
+				        		}).update({
+				        			usersid : _id
+				        		}).run(con).then(function(){
+				        			io.sockets.connected[socket.id].emit("argos", { type : 'register', success : true } );
+				        			// find agent
+				        			_this.findAgent();
+				        		});
+				        	});
+		            	});
+		            	
 		            break;
 		        }
 
