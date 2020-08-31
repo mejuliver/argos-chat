@@ -1,9 +1,8 @@
 var $argos_app;
 (function(){
-	$argos_pp = {
+	$argos_app = {
 		create : function(){
 			this.chatInit();
-			this.connect();
 			this.initStyle();
 			this.initBall();
 			this.initForm();
@@ -19,9 +18,9 @@ var $argos_app;
 					_this.toggleForm(true);
 				}
 			}
-			el.innerHTML = '<img src="/../img/argos-ball.png width="64" height="64">';
+			el.innerHTML = '<img src="assets/img/argos-ball.png" width="64" height="64">';
 			document.querySelector('body').appendChild(el);
-		}
+		},
 		initStyle : function(){
 			el = document.createElement('style');
 			el.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap';
@@ -34,7 +33,7 @@ var $argos_app;
 			el.innerHTML = `
 				#argos-form, #argos-form *,#argos-ball{
 					font-family: 'Roboto', sans-serif!important;
-					border-sizing: border-box!important;
+					box-sizing: border-box!important;
 				}
 				#argos-ball{
 					width:64px;
@@ -46,6 +45,7 @@ var $argos_app;
 					right:20px;
 					z-index:1;
 					display:block;
+					cursor:pointer;
 				}
 				#argos-form.active{
 					display:block!important;
@@ -72,11 +72,13 @@ var $argos_app;
 				.argos-ui.argos-input-wrapper:last-child{
 					margin-bottom:0px!important;
 				}
-				.argos-ui.argos-input-wrapper h3{
-					margin-bottom:16px!important
+				.argos-ui h3{
+					color:#0099ff;
+					font-weight:900;
+					margin-bottom:16px!important;
 					text-align:center!important;
 				}
-				.argos-ui.argos-input-wrapper input{
+				.argos-ui.argos-input-wrapper .argos-input-text{
 					border:2px solid #ededed!important;
 					margin-bottom:0px!important;
 					background:none!important;
@@ -84,7 +86,8 @@ var $argos_app;
 					font-size: 13.5px!important;
 					color:#242424!important;
 					outline:none!important;
-					border-radius:12px;
+					border-radius: 12px!important;
+					width:100%;
 				}
 				.argos-ui.argos-input-wrapper input,.argos-ui.argos-input-wrapper button{
 					outline:none!important;
@@ -92,13 +95,47 @@ var $argos_app;
 				.argos-ui.argos-input-wrapper button{
 					width:100%;
 					display:block;
-					padding: 12px 8px!impotant;
+					color:#FFF!important;
+					padding: 8px!important;
 					border-radius:12px;
 					border:1px solid #0099ff!important;
 					background:#0099ff!important;
+					border-radius:20px!important;
 				}
 				.argos-ui.argos-input-wrapper button:hover{
 					box-shadow: 0 10px 40px -6px rgba(0,153,255,0.1);
+				}
+				#argos-convo-box{
+					display:none;
+				}
+				#argos-convo-box.active{
+					display:block!important;
+				}
+				#argos-message-box{
+					min-height: 200px;
+				    max-height: 330px;
+				    overflow-x: hidden;
+				    overflow-y: auto;
+				    width: 100%;
+				}
+				#argos-message-box-input{
+					position: relative;
+				}
+				#argos-message-box-input input{
+					border: none;
+				    border-bottom: 2px solid #ccc;
+				    width: 100%;
+				    outline: none;
+				    width:100%;
+				}
+				#argos-message-box-input input:focus{
+					border-color: #0099FF!important;
+				}
+				.argos-ui.argos-form-wrapper{
+					display:none;
+				}
+				.argos-ui.argos-form-wrapper.active{
+					display:block!important;
 				}
 			`;
 			document.querySelector('head').appendChild(el);
@@ -107,10 +144,14 @@ var $argos_app;
 			let el = document.createElement('div');
 			el.setAttribute('id','argos-form');
 			el.classList.add('argos','argos-form','argos-ui');
-			el.innerHTML = `<div class="argos-ui argos argos-form-wrapper">
-				<div class="argos-ui argos argos-input-wrapper">
-					<h3>Argos Chat</h3>
-				</div>
+			el.innerHTML = `<h3>Argos Chat</h3>
+			<div id="argos-convo-box" class="argos argos-ui">
+			    <div id="argos-message-box" class="argos argos-ui"></div>
+		        <div id="argos-message-box-input" class="argos argos-ui">
+		        	<input type="text" class="argos argos-ui argos-input-text" placeholder="Type message, enter to send...">
+		        </div>
+			</div>
+			<div class="argos-ui argos argos-form-wrapper active">
 				<div class="argos-ui argos argos-input-wrapper">
 					<input type="text" placeholder="First name" name="fname" data-alias="First name" class="argos argos-ui argos-input argos-input-text" data-validate="required">
 				</div>
@@ -118,18 +159,18 @@ var $argos_app;
 					<input type="text" placeholder="Last name" name="lname" class="argos argos-ui argos-input argos-input-text">
 				</div>
 				<div class="argos-ui argos argos-input-wrapper">
-					<input type="email" placeholder="Email" name="email" data-alias="Email" class="argos argos-ui argos-input argos-input-text" data-validate="required">
+					<input type="email" placeholder="Email" name="email" data-alias="Email" class="argos argos-ui argos-input argos-input-text" data-validate="required,email">
 				</div>
 				<div class="argos-ui argos argos-input-wrapper">
-					<textarea row="3" col="2" placeholder="First name" name="message" class="argos argos-ui argos-input argos-input-textarea"></textarea>
+					<textarea row="3" col="2" placeholder="Message" name="message" class="argos argos-ui argos-input argos-input-text"></textarea>
 				</div>
 				<div class="argos-ui argos argos-input-wrapper">
 					<button class="argos argos-ui argos-button" onclick="window.$argos_app.startChat()">Submit</button>
 				</div>
 			</div>`;
 
-			document.querySelector()
-		}
+			document.querySelector('body').appendChild(el);
+		},
 		validateForm : {
 			validation : [
 				{
@@ -162,7 +203,9 @@ var $argos_app;
 			],
 			check : function(t,v){
 
-				let has_error = false;
+				let _this = this;
+
+				let isclean = true;
 
 				document.querySelectorAll('#argos-form [data-validate]').forEach(function(item){
 					let arr = item.getAttribute('data-validate').split(',');
@@ -170,11 +213,11 @@ var $argos_app;
 					let err = [];
 
 					arr.forEach(function(item2){
-						let res = this.validation.find(function(item){
-							return item.type == t;
+						let res = _this.validation.find(function(item){
+							return item.type == item2.trim();
 						});
 
-						let q = res.task(item.trim(),item.value);
+						let q = res.task(item.value);
 
 						if( typeof res == 'undefined' ){
 							err.push('Validation for '+item2+' not found');
@@ -185,13 +228,13 @@ var $argos_app;
 
 					if( err.length > 0 ){
 						alert(err.join(','));
-						has_error = true;
+						isclean = false
 					}
 				});
 
-				return has_error;
+				return isclean;
 			}
-		}
+		},
 		startChat : function(){
 			if( !this.validateForm.check() ){
 				return;
@@ -205,31 +248,36 @@ var $argos_app;
 					fname : document.querySelector('#argos-form input[name="fname"]').value,
 					lname : document.querySelector('#argos-form input[name="lname"]').value,
 					email : document.querySelector('#argos-form input[name="email"]').value,
-					message : document.querySelector('#argos-form input[name="message"]').value
+					message : document.querySelector('#argos-form textarea[name="message"]').value
 				}
 			});
 		},
 		formState : function(s){
 			if( typeof s == 'undefined' || !s ){
+				document.querySelector('#argos-form .argos-form-wrapper').style.opacity = '.5';
 				document.querySelector('#argos-form input[name="fname"]').disabled = true;
 				document.querySelector('#argos-form input[name="lname"]').disabled = true;
 				document.querySelector('#argos-form input[name="email"]').disabled = true;
-				document.querySelector('#argos-form input[name="message"]').disabled = true;
+				document.querySelector('#argos-form textarea[name="message"]').disabled = true;
 				document.querySelector('#argos-form button').textContent = 'Starting chat...';
 				document.querySelector('#argos-form button').disabled = true;
 			}else{
+				document.querySelector('#argos-form .argos-form-wrapper').style.opacity = '1';
 				document.querySelector('#argos-form input[name="fname"]').disabled = false;
 				document.querySelector('#argos-form input[name="lname"]').disabled = false;
 				document.querySelector('#argos-form input[name="email"]').disabled = false;
-				document.querySelector('#argos-form input[name="message"]').disabled = false;
+				document.querySelector('#argos-form textarea[name="message"]').disabled = false;
 				document.querySelector('#argos-form button').textContent = 'Chat Now';
 				document.querySelector('#argos-form button').disabled = false;
 			}
 		},
-		connect : function(){
-			socket.emit('argos',{
-				type : 'connect'
-			});
+		showConvo : function(){
+			document.querySelector('.argos-ui.argos-form-wrapper').classList.remove('active');
+			document.querySelector('#argos-convo-box').classList.add('active');
+		},
+		showForm : function(){
+			document.querySelector('#argos-convo-box').classList.remove('active');
+			document.querySelector('.argos-ui.argos-form-wrapper').classList.add('active');
 		},
 		chatInit : function(){
 			let _this = this;
@@ -247,21 +295,20 @@ var $argos_app;
 				switch( res.type ){
 					case 'connect' :
 					if( res.success ){
-						_this.showForm();
+						_this.formState(true);
 					}else{
 						alert('Unable to connect to server');
-						this.formState(true);
 					}
-					
 					break;
-					case 'register'
+					case 'register' :
+						_this.formState(true);
 						if( res.success ){
 							socket.emit('argos',{
 								type : 'chat'
 							});
+							_this.showConvo();
 						}else{
 							alert('Unable to authenticate to server');
-							this.formState('on');
 						}
 					break;
 				}
@@ -277,5 +324,5 @@ var $argos_app;
 
 	}
 
-	$app_argos.create();
+	$argos_app.create();
 })();

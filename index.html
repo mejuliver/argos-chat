@@ -7,15 +7,16 @@
 	<meta name="robots" content="noindex" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://devcnmain.connectnigeria.com/assets/css/app.css">
 </head>
 <body>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script src="http://devcnmain.connectnigeria.com/assets/js/app.js"></script>
-	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
 	<script>
 		// var bizfairv_server = 'wss://www.connectnigeria.com:3700';
-		var $server= 'ws://localhost:3700';
+		const socket = io('http://localhost:3700',{
+			transports : ['websocket']
+		});
 	</script>
 
 	<script src="assets/js/app.js"></script>
