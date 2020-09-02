@@ -137,14 +137,115 @@ var $argos_app;
 				.argos-ui.argos-form-wrapper.active{
 					display:block!important;
 				}
+				.lds-ellipsis {
+				  display: table;
+				  position: relative;
+				  width:80px;
+				  margin:0px auto;
+				}
+				.lds-ellipsis div {
+				  position: absolute;
+				  top: 0px;
+				  width: 13px;
+				  height: 13px;
+				  border-radius: 50%;
+				  background: #0099ff;
+				  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+				}
+				.lds-ellipsis div:nth-child(1) {
+				  left: 8px;
+				  animation: lds-ellipsis1 0.6s infinite;
+				}
+				.lds-ellipsis div:nth-child(2) {
+				  left: 8px;
+				  animation: lds-ellipsis2 0.6s infinite;
+				}
+				.lds-ellipsis div:nth-child(3) {
+				  left: 32px;
+				  animation: lds-ellipsis2 0.6s infinite;
+				}
+				.lds-ellipsis div:nth-child(4) {
+				  left: 56px;
+				  animation: lds-ellipsis3 0.6s infinite;
+				}
+				@keyframes lds-ellipsis1 {
+				  0% {
+				    transform: scale(0);
+				  }
+				  100% {
+				    transform: scale(1);
+				  }
+				}
+				@keyframes lds-ellipsis3 {
+				  0% {
+				    transform: scale(1);
+				  }
+				  100% {
+				    transform: scale(0);
+				  }
+				}
+				@keyframes lds-ellipsis2 {
+				  0% {
+				    transform: translate(0, 0);
+				  }
+				  100% {
+				    transform: translate(24px, 0);
+				  }
+				}
+				#argos-loader{
+					display:none;
+					background: rgba(255,255,255,0.8);
+					position: absolute;
+				    width: 100%;
+				    height: calc(100% - 20px);
+				    align-items: center;
+				    justify-content: center;
+				    z-index:999;
+				    top:0px;
+				    left:0px;
+				}
+				#argos-loader.active{
+					display:flex!important;
+				}
+				#argos-loader p{
+					margin: 0px 0px 12px 0px;
+				    font-size: 13px;
+				    opacity: .8;
+				    text-align: center;
+				}
 			`;
 			document.querySelector('head').appendChild(el);
+		},
+		loader : {
+			show : function(p,c){
+				document.querySelector('#argos-loader').classList.add('active');
+
+				if( typeof p != 'undefined' ){
+					document.querySelector('#argos-loader p').innerHTML = p;
+				}
+				
+				if( typeof c == 'function' ){
+					setTimeout( function(){
+						c();
+					},300);
+				}
+			},
+			hide : function(c){
+				document.querySelector('#argos-loader').classList.remove('active');
+				document.querySelector('#argos-loader p').innerHTML = '';
+				if( typeof c == 'function' ){
+					setTimeout( function(){
+						c();
+					},300);
+				}
+			}
 		},
 		initForm : function(){
 			let el = document.createElement('div');
 			el.setAttribute('id','argos-form');
 			el.classList.add('argos','argos-form','argos-ui');
-			el.innerHTML = `<h3>Argos Chat</h3>
+			el.innerHTML = `<div id="argos-loader"><div><p></p><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div></div>
+			<h3>Argos Chat</h3>
 			<div id="argos-convo-box" class="argos argos-ui">
 			    <div id="argos-message-box" class="argos argos-ui"></div>
 		        <div id="argos-message-box-input" class="argos argos-ui">
@@ -306,6 +407,7 @@ var $argos_app;
 							socket.emit('argos',{
 								type : 'chat'
 							});
+							_this.loader.show('Finding agent...');
 							_this.showConvo();
 						}else{
 							alert('Unable to authenticate to server');
