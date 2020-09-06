@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    title= title
+    meta(http-equiv='Content-Type' content='text/html; charset=utf-8')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css' type='text/css' rel='stylesheet' media='all')
+    link(href='assets/css/app.css' type='text/css' rel='stylesheet' media='all')
+  body
+    div.main-wrapper.argos.argos-ui.argos-ui-wrapper
+      div.container
+        div.row
+          div.col-12.col-md-5.offset-md-4
+            form.argos-ui.argos.argos-ui-form
+              .argos-ui.argos.argos-input-wrapper
+                input.argos.argos-ui.argos-input.argos-input-text(type='text' placeholder='Email address' name='email' data-alias='Email address' data-validate='required,email')
+              .argos-ui.argos.argos-input-wrapper
+                input.argos.argos-ui.argos-input.argos-input-text(type='password' placeholder='Password' name='password' data-alias='Password' data-validate='required')
+              .argos-ui.argos.argos-input-wrapper
+                button.argos.argos-ui.argos-button Submit

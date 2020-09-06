@@ -1,18 +1,13 @@
 {
-  "name": "frontend-template",
+  "name": "argos-chat",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "build": "concurrently --kill-others \"npm run buildcss\" \"npm run buildjs\" \"npm run reload\"",
-    "buildcss": "node builder.js",
-    "buildjs": "node builder2.js",
-    "reload": "reload -b"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@doweb/vuexpress": "^1.1.3",
     "axios": "^0.20.0",
     "crypto-js": "^4.0.0",
     "express": "^4.17.1",
@@ -21,9 +16,11 @@
     "https": "^1.0.0",
     "imagemin": "^7.0.0",
     "imagemin-webp": "^5.1.0",
+    "mini-css-extract-plugin": "^0.11.0",
     "moment": "^2.27.0",
     "parcel-bundler": "^1.12.4",
     "path": "^0.12.7",
+    "pug": "^3.0.0",
     "rethinkdb": "^2.4.2",
     "socket.io": "^2.3.0",
     "uniqid": "^5.2.0",

@@ -33,6 +33,23 @@ let socketList = io.sockets.server.eio.clients;
 
 const r = require('rethinkdb');
 
+// ## EXPRESS JS ADMIN
+const path = require('path');
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+app.use(express.static('public'));
+
+app.get('/', function(req, res) {
+    res.render('login', { title: 'Login | Argos Chat' });
+});
+
+app.get('/login', function(req, res) {
+    res.render('login', { title: 'Login | Argos Chat' });
+});
+
+// -- END
+
 let argos = {
 	create : function(){
 		this.prepareDB();
@@ -99,15 +116,26 @@ let argos = {
 		r.db('argosdb').table('messages').indexCreate('usersid').run(con).catch(function(){});
 		r.db('argosdb').table('admin').indexCreate('type').run(con).catch(function(){});
 	},
-	findAgent : function(){
+	findAgent : function(socketid){
 		r.db('argosdb').table('admin').filter({
 			type : 'agent',
 			online : true,
-			room : 	false,
 			session : false
 		}).run(con).then(function(res){
-			// console.log('agent found');
-			
+			console.log('agent found');
+			res.toArray(function(err,result){
+				if( result.length > 0 ){
+					r.db('argosdb').table('admin').get(result.id).update({
+						session : socketid
+					}).run(con).then(function(){
+						io.sockets.connected[socketid].emit("argos", { type : 'find agent', success : true, data : result[0] } );
+					}).catch(function(){
+						console.log('Unable to update agent session to per with socket id '+socketid);
+						io.sockets.connected[socketid].emit("argos", { type : 'find agent', success : false } );
+					})
+				}
+
+			});
 		});
 	},
 	startServer : function(){
@@ -168,7 +196,7 @@ let argos = {
 						        		}).run(con).then(function(){
 						        			io.sockets.connected[socket.id].emit("argos", { type : 'register', success : true } );
 						        			// find agent
-						        			_this.findAgent();
+						        			_this.findAgent(socket.id);
 						        		}).catch(function(){
 						        			console.log('User for '+socket.id+' not found');
 						        		});

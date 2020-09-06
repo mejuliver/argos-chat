@@ -1,0 +1,149 @@
+.main-wrapper{
+  min-height:100vh;
+  display:flex;
+  align-items: center;
+  justify-content:center;
+}
+.argos-ui.argos-input-wrapper{
+	position:relative;
+	width:100%;
+	margin-bottom:12px;
+}
+.argos-ui.argos-input-wrapper:last-child{
+	margin-bottom:0px!important;
+}
+.argos-ui.argos-input-wrapper .argos-input-text{
+	border:2px solid #ededed!important;
+	margin-bottom:0px!important;
+	background:none!important;
+	padding: 8px !important;
+	font-size: 13.5px!important;
+	color:#242424!important;
+	outline:none!important;
+	border-radius: 12px!important;
+	width:100%;
+}
+.argos-ui.argos-input-wrapper input,.argos-ui.argos-input-wrapper button{
+	outline:none!important;
+}
+.argos-ui.argos-input-wrapper button{
+	width:100%;
+	display:block;
+	color:#FFF!important;
+	padding: 8px!important;
+	border-radius:12px;
+	border:1px solid #0099ff!important;
+	background:#0099ff!important;
+	border-radius:20px!important;
+}
+.argos-ui.argos-input-wrapper button:hover{
+	box-shadow: 0 10px 40px -6px rgba(0,153,255,0.1);
+}
+#argos-convo-box{
+	display:none;
+}
+#argos-convo-box.active{
+	display:block!important;
+}
+#argos-message-box{
+	min-height: 200px;
+    max-height: 330px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+}
+#argos-message-box-input{
+	position: relative;
+}
+#argos-message-box-input input{
+	border: none;
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    outline: none;
+    width:100%;
+}
+#argos-message-box-input input:focus{
+	border-color: #0099FF!important;
+}
+.argos-ui.argos-form-wrapper{
+	display:none;
+}
+.argos-ui.argos-form-wrapper.active{
+	display:block!important;
+}
+.lds-ellipsis {
+  display: table;
+  position: relative;
+  width:80px;
+  margin:0px auto;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 0px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #0099ff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+#argos-loader{
+	display:none;
+	background: rgba(255,255,255,0.8);
+	position: absolute;
+    width: 100%;
+    height: calc(100% - 20px);
+    align-items: center;
+    justify-content: center;
+    z-index:999;
+    top:0px;
+    left:0px;
+}
+#argos-loader.active{
+	display:flex!important;
+}
+#argos-loader p{
+	margin: 0px 0px 12px 0px;
+    font-size: 13px;
+    opacity: .8;
+    text-align: center;
+}

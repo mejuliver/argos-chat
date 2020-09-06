@@ -240,6 +240,14 @@ var $argos_app;
 				}
 			}
 		},
+		agentData : function(s){
+			if( typeof s != 'undefined' && typeof s == 'object' ){
+				document.querySelector('#argos-chat-agent-data').value = JSON.stringify(s);
+			}else{
+				return JSON.parse(document.querySelector('#argos-chat-agent-data').value);
+			}
+
+		},
 		initForm : function(){
 			let el = document.createElement('div');
 			el.setAttribute('id','argos-form');
@@ -247,6 +255,7 @@ var $argos_app;
 			el.innerHTML = `<div id="argos-loader"><div><p></p><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div></div>
 			<h3>Argos Chat</h3>
 			<div id="argos-convo-box" class="argos argos-ui">
+				<input type="hidden" id="argos-chat-agent-data" value="" style="display:none">
 			    <div id="argos-message-box" class="argos argos-ui"></div>
 		        <div id="argos-message-box-input" class="argos argos-ui">
 		        	<input type="text" class="argos argos-ui argos-input-text" placeholder="Type message, enter to send...">
@@ -411,6 +420,12 @@ var $argos_app;
 							_this.showConvo();
 						}else{
 							alert('Unable to authenticate to server');
+						}
+					break;
+					case 'find agent':
+						if( res.success ){
+							// prepare, save the data to head
+							_this.agentData(res.data);
 						}
 					break;
 				}
