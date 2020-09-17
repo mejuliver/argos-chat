@@ -27,7 +27,6 @@ let uniqid = require('uniqid');
 const Entities = require('html-entities').XmlEntities;
 const entities = new Entities();    
 
-let dbready = false;
 let con = false;
 let socketList = io.sockets.server.eio.clients;
 
@@ -35,22 +34,29 @@ const r = require('rethinkdb');
 
 // ## EXPRESS JS ADMIN
 const path = require('path');
+const bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static('public'));
 
-app.get('/', function(req, res) {
-    res.render('login', { title: 'Login | Argos Chat' });
-});
+// -- router
+const router = require(path.join(__dirname,'router.js'));
 
-app.get('/login', function(req, res) {
-    res.render('login', { title: 'Login | Argos Chat' });
-});
+app.use('/', router);
+
+// generate a custom password
+// const passwordHash = require('password-hash');
+
+// console.log( passwordHash.generate('test') );
 
 // -- END
 
-let argos = {
+console.log( uniqid() );
+moment().add(1, 'days').format('DD MMMM YYYY').toString();
+const argos = {
 	create : function(){
 		this.prepareDB();
 	},
@@ -67,7 +73,6 @@ let argos = {
   			}).catch(function(){
   				_this.initTables();
   			});
-		  		
 		  	// create login table if not found
 		  }
 		});
@@ -88,6 +93,12 @@ let argos = {
 			console.log('argos users table already created');
 		});
 
+		r.db('argosdb').tableCreate('auth').run(con).then(function(){
+			console.log('argos auth table has been created');
+		}).catch(function(){
+			console.log('argos auth table already created');
+		});
+
 		r.db('argosdb').tableCreate('messages').run(con).then(function(){
 			console.log('argos messages table has been created');
 		}).catch(function(){
@@ -98,6 +109,12 @@ let argos = {
 		}).catch(function(){
 			console.log('argos messages table already created');
 		});
+		r.db('argosdb').tableCreate('sessions').run(con).then(function(){
+			console.log('argos sessions table has been created');
+		}).catch(function(){
+			console.log('argos sessions table already created');
+		});
+
 
 		let timer = setInterval(function(){
 			r.db('argosdb').tableList().run(con).then(function(res){
@@ -113,8 +130,12 @@ let argos = {
 		r.db('argosdb').table('connections').indexCreate('userid').run(con).catch(function(){});
 		r.db('argosdb').table('users').indexCreate('first_name').run(con).catch(function(){});
 		r.db('argosdb').table('users').indexCreate('email').run(con).catch(function(){});
+		r.db('argosdb').table('users').indexCreate('email').run(con).catch(function(){});
 		r.db('argosdb').table('messages').indexCreate('usersid').run(con).catch(function(){});
 		r.db('argosdb').table('admin').indexCreate('type').run(con).catch(function(){});
+		r.db('argosdb').table('admin').indexCreate('email').run(con).catch(function(){});
+		r.db('argosdb').table('sessions').indexCreate('sess_key').run(con).catch(function(){});
+		r.db('argosdb').table('sessions').indexCreate('name').run(con).catch(function(){});
 	},
 	findAgent : function(socketid){
 		r.db('argosdb').table('admin').filter({

@@ -1,8 +1,24 @@
+body{
+  font-family: 'Roboto', sans-serif;
+  background: #F5F5F5;
+}
 .main-wrapper{
   min-height:100vh;
   display:flex;
   align-items: center;
   justify-content:center;
+}
+h2.title{
+  margin-bottom: 32px;
+  text-align:center;
+  font-weight: 900;
+  color: #0099FF;
+}
+.argos-ui-form{
+  padding:24px;
+  background: #FFF;
+  border:1px solid #ededed;
+  border-radius: 5px;
 }
 .argos-ui.argos-input-wrapper{
 	position:relative;
