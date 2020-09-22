@@ -1,16 +1,38 @@
 const express = require('express');
+const app = express();
 const router = express.Router();
 const path = require('path');
-const cookieSession = require('cookie-session');
+const cookie = require('cookie-parser');
+const session = require('express-session');
+const RDBStore = require('express-session-rethinkdb')(session);
 // -- controllers
 const account = require(path.join(__dirname, 'controllers/account.js'));
 
-app.use(cookieSession({
-  name: 'session',
-  keys: ['argoschat2020'],
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+const rdbStore = new RDBStore({
+  connectOptions: {
+    servers: [
+      { host: 'localhost', port: 28015 },
+    ],
+    db: 'argosdb',
+    discovery: false,
+    pool: true,
+    buffer: 50,
+    max: 1000,
+    timeout: 20,
+    timeoutError: 1000
+  },
+  table: 'sessions',
+  sessionTimeout: 86400000,
+  flushInterval: 60000,
+  debug: false
+});
+ 
+app.use(cookie());
+app.use(session({
+  key: 'sid',
+  secret: 'argoschat2020',
+  cookie: { maxAge: 860000 },
+  store: rdbStore
 }));
 
 router.use(function timeLog (req, res, next) {

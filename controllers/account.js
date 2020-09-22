@@ -1,5 +1,4 @@
 const path = require('path');
-const app = express();
 const account_model = require(path.join(__dirname, '../models/account_model.js'));
 
 exports.login = (u,p,f)=>{

@@ -54,8 +54,8 @@ app.use('/', router);
 
 // -- END
 
-console.log( uniqid() );
-moment().add(1, 'days').format('DD MMMM YYYY').toString();
+const rethinkdb_con = require(path.join(__dirname, 'helpers/rethinkdb-connect.js'));
+
 const argos = {
 	create : function(){
 		this.prepareDB();
@@ -63,18 +63,13 @@ const argos = {
 	prepareDB : function(){
 		let _this = this;
 
-		r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
-		  if(err){
-		  	throw err; // throw error
-		  }else{
-		  	con = conn;
+		rethinkdb_con.connect(function(err,conn){
+			con = conn;
   			r.dbCreate('argosdb').run(conn).then(function(){
   				_this.initTables();
   			}).catch(function(){
   				_this.initTables();
   			});
-		  	// create login table if not found
-		  }
 		});
 	},
 	initTables : function(){
@@ -130,8 +125,7 @@ const argos = {
 		r.db('argosdb').table('connections').indexCreate('userid').run(con).catch(function(){});
 		r.db('argosdb').table('users').indexCreate('first_name').run(con).catch(function(){});
 		r.db('argosdb').table('users').indexCreate('email').run(con).catch(function(){});
-		r.db('argosdb').table('users').indexCreate('email').run(con).catch(function(){});
-		r.db('argosdb').table('messages').indexCreate('usersid').run(con).catch(function(){});
+		r.db('argosdb').table('messages').indexCreate('userid').run(con).catch(function(){});
 		r.db('argosdb').table('admin').indexCreate('type').run(con).catch(function(){});
 		r.db('argosdb').table('admin').indexCreate('email').run(con).catch(function(){});
 		r.db('argosdb').table('sessions').indexCreate('sess_key').run(con).catch(function(){});
